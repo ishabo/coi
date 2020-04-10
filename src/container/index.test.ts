@@ -62,6 +62,18 @@ describe('Container', () => {
     }
   }
 
+  @Injectable()
+  class Class1 {
+    constructor(private param: Class2) {}
+  }
+
+  class Class2 {
+    constructor(private param: Class1) {}
+  }
+
+  afterEach(() => {
+    (console.log as any).mockClear();
+  });
 
   it('injects Logger into ApiService', () => {
     const container = new Container();
@@ -122,4 +134,22 @@ describe('Container', () => {
     expect(myLogger.errorFileRef).toEqual('error.txt');
   });
 
+  it('throws an error if dependency is circular', () => {
+    const container = new Container();
+
+    container.register({
+      ref: Class1,
+      source: Class1,
+      type: 'class'
+    });
+    container.register({
+      ref: Class2,
+      source: Class2,
+      type: 'class'
+    });
+
+    expect(() => {
+      container.construct(Class1);
+    }).toThrowError('Recursive dependency');
+  });
 });
