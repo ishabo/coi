@@ -77,15 +77,17 @@ describe('Container', () => {
 
   it('injects Logger into ApiService', () => {
     const container = new Container();
-    container.register({ ref: Logger, source: Logger, type: 'class' });
-    container.construct(ApiService);
+    container
+      .inject({ ref: Logger, source: Logger, type: 'class' })
+      .into(ApiService);
     expect(console.log).toHaveBeenCalledWith('[log]', 'ApiService initialized');
   });
 
   it('can substitute for another dependency of the same type', () => {
     const container = new Container();
-    container.register({ ref: Logger, source: AltLogger, type: 'class' });
-    container.construct(ApiService);
+    container
+      .inject({ ref: Logger, source: AltLogger, type: 'class' })
+      .into(ApiService);
     expect(console.log).toHaveBeenCalledWith(
       '[alt-log]',
       'ApiService initialized'
@@ -94,9 +96,10 @@ describe('Container', () => {
 
   it('can recursively inject class dependencies', async () => {
     const container = new Container();
-    container.register({ ref: Logger, source: Logger, type: 'class' });
-    container.register({ ref: ApiService, source: ApiService, type: 'class' });
-    const productService = container.construct(ProductService);
+    const productService = container
+      .inject({ ref: Logger, source: Logger, type: 'class' })
+      .and({ ref: ApiService, source: ApiService, type: 'class' })
+      .into(ProductService);
     expect(await productService.getProduct()).toEqual({
       id: 'id',
       name: 'name'
@@ -106,30 +109,33 @@ describe('Container', () => {
   it('injects a param into an injectable class', () => {
     const container = new Container();
 
-    container.register({ ref: LogFileRef, source: 'log.txt', type: 'param' });
-    const myLogger = container.construct(MyLogger);
+    const myLogger = container
+      .inject({ ref: LogFileRef, source: 'log.txt', type: 'param' })
+      .into(MyLogger);
     expect(myLogger.logFileRef).toEqual('log.txt');
   });
 
   it('throws an error if a dependency is missing', () => {
     const container = new Container();
 
-    container.register({ ref: LogFileRef, source: 'log.txt', type: 'param' });
     expect(() => {
-      container.construct(MyOtherLogger);
+      container
+        .inject({ ref: LogFileRef, source: 'log.txt', type: 'param' })
+        .into(MyOtherLogger);
     });
   });
 
   it('inject more than one param into an injectable class', () => {
     const container = new Container();
 
-    container.register({ ref: LogFileRef, source: 'log.txt', type: 'param' });
-    container.register({
-      ref: ErrorFileRef,
-      source: 'error.txt',
-      type: 'param'
-    });
-    const myLogger = container.construct(MyOtherLogger);
+    const myLogger = container
+      .inject({ ref: LogFileRef, source: 'log.txt', type: 'param' })
+      .and({
+        ref: ErrorFileRef,
+        source: 'error.txt',
+        type: 'param'
+      })
+      .into(MyOtherLogger);
     expect(myLogger.logFileRef).toEqual('log.txt');
     expect(myLogger.errorFileRef).toEqual('error.txt');
   });
@@ -137,19 +143,19 @@ describe('Container', () => {
   it('throws an error if dependency is circular', () => {
     const container = new Container();
 
-    container.register({
-      ref: Class1,
-      source: Class1,
-      type: 'class'
-    });
-    container.register({
-      ref: Class2,
-      source: Class2,
-      type: 'class'
-    });
-
     expect(() => {
-      container.construct(Class1);
+      container
+        .inject({
+          ref: Class1,
+          source: Class1,
+          type: 'class'
+        })
+        .and({
+          ref: Class2,
+          source: Class2,
+          type: 'class'
+        })
+        .into(Class1);
     }).toThrowError('Recursive dependency');
   });
 });
