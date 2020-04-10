@@ -1,0 +1,24 @@
+{
+  "name": "coitainer",
+  "version": "1.0.0",
+  "description": "IoC Container",
+  "main": "build/index.js",
+  "author": "Issa Shabo <issashabo@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "$(yarn bin)/tsc",
+    "lint": "$(yarn bin)/tslint --project .",
+    "test": "$(yarn bin)/jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "jest": "^25.3.0",
+    "ts-jest": "^25.3.1",
+    "tslint": "^6.1.1",
+    "tslint-blueprint": "^0.1.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  }
+}

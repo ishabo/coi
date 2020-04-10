@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "target": "es5",
+    "lib": ["es2017"],
+    "declaration": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "typeRoots": ["node_modules/@types"],
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "compileOnSave": false,
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts"]
+}
