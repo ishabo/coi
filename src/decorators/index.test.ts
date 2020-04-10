@@ -17,12 +17,12 @@ describe('decorators', () => {
       Reflect.defineMetadata = jest.fn();
       const inject = Inject('some-ref');
       const obj = { param: 'value' };
-      inject(obj, 'param');
+      inject(obj, 'param', 0);
       expect(Reflect.defineMetadata).toHaveBeenCalledWith(
         keys.INJECT,
         'some-ref',
         { param: 'value' },
-        'param'
+        '0'
       );
     });
   });
