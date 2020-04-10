@@ -6,3 +6,7 @@ export const Injectable = () => (target: any) => {
   return target;
 };
 
+export const Inject = (ref: any) => (target: any, value: string) => {
+  Reflect.defineMetadata(keys.INJECT, ref, target, value);
+  return target;
+};
