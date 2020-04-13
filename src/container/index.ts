@@ -1,10 +1,10 @@
 import 'reflect-metadata';
-import { InjectionRef } from '../injectable-ref';
+import { InjectableRef } from '../injectable-ref';
 import keys from '../decorators/keys';
 
 type TConstructor<T> = new (...args: any[]) => T;
 
-type TRef<T> = InjectionRef | TConstructor<T>;
+type TRef<T> = InjectableRef | TConstructor<T>;
 
 type TSource<T> = TConstructor<T> | T;
 
@@ -50,7 +50,7 @@ export class Container {
     let registeredDependency = this.registrar.get(target);
     if (
       registeredDependency === undefined &&
-      !(target instanceof InjectionRef)
+      !(target instanceof InjectableRef)
     ) {
       registeredDependency = {
         ref: target,
@@ -77,7 +77,7 @@ export class Container {
 
   private getParams<T>(target: TConstructor<T>) {
     const params = Reflect.getMetadata('design:paramtypes', target) || [];
-    return params.map((param: InjectionRef, index: number) => {
+    return params.map((param: InjectableRef, index: number) => {
       if (param === undefined) {
         throw new Error('Recursive dependency');
       }

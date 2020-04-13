@@ -1,74 +1,74 @@
 import { Container } from '.';
 import { Injectable, Inject } from '../decorators';
-import { InjectionRef } from '../injectable-ref';
+import { InjectableRef } from '../injectable-ref';
+
+const LogFileRef = new InjectableRef('ERROR_FILE_REF');
+const ErrorFileRef = new InjectableRef('ERROR_FILE_REF');
 
 /* tslint:disable: max-classes-per-file */
+class Logger {
+  public log(...args: any[]) {
+    console.log('[log]', ...args);
+  }
+}
+
+@Injectable()
+class MyLogger {
+  constructor(@Inject(LogFileRef) public logFileRef: string) {}
+  public log(...args: any[]) {
+    console.log('[my-log]', ...args);
+  }
+}
+
+@Injectable()
+class MyOtherLogger {
+  constructor(
+    @Inject(LogFileRef) public logFileRef: string,
+    @Inject(ErrorFileRef) public errorFileRef?: undefined | string
+  ) {}
+  public log(...args: any[]) {
+    console.log('[my-log]', ...args);
+  }
+  public error(...args: any[]) {
+    console.error('[my-error]', ...args);
+  }
+}
+
+@Injectable()
+class ApiService {
+  constructor(private readonly logger: Logger) {
+    this.logger.log('ApiService initialized');
+  }
+  async getData() {
+    return { id: 'id', name: 'name' };
+  }
+}
+
+@Injectable()
+class ProductService {
+  constructor(private readonly api: ApiService) {}
+  async getProduct() {
+    return await this.api.getData();
+  }
+}
+
+@Injectable()
+class Class1 {
+  constructor(private param: Class2) {}
+}
+
+@Injectable()
+class Class2 {
+  constructor(private param: Class1) {}
+}
+
 describe('Container', () => {
   console.log = jest.fn();
-
-  const LogFileRef = new InjectionRef('ERROR_FILE_REF');
-  const ErrorFileRef = new InjectionRef('ERROR_FILE_REF');
-
-  class Logger {
-    public log(...args: any[]) {
-      console.log('[log]', ...args);
-    }
-  }
 
   class AltLogger {
     public log(...args: any[]) {
       console.log('[alt-log]', ...args);
     }
-  }
-
-  @Injectable()
-  class MyLogger {
-    constructor(@Inject(LogFileRef) public logFileRef: string) {}
-    public log(...args: any[]) {
-      console.log('[my-log]', ...args);
-    }
-  }
-
-  @Injectable()
-  class MyOtherLogger {
-    constructor(
-      @Inject(LogFileRef) public logFileRef: string,
-      @Inject(ErrorFileRef)
-      public errorFileRef: undefined | string | object = undefined
-    ) {}
-    public log(...args: any[]) {
-      console.log('[my-log]', ...args);
-    }
-    public error(...args: any[]) {
-      console.error('[my-error]', ...args);
-    }
-  }
-
-  @Injectable()
-  class ApiService {
-    constructor(private readonly logger: Logger) {
-      this.logger.log('ApiService initialized');
-    }
-    async getData() {
-      return { id: 'id', name: 'name' };
-    }
-  }
-
-  @Injectable()
-  class ProductService {
-    constructor(private readonly api: ApiService) {}
-    async getProduct() {
-      return await this.api.getData();
-    }
-  }
-
-  @Injectable()
-  class Class1 {
-    constructor(private param: Class2) {}
-  }
-
-  class Class2 {
-    constructor(private param: Class1) {}
   }
 
   afterEach(() => {

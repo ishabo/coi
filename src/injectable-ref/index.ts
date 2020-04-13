@@ -1,3 +1,3 @@
-export class InjectionRef {
+export class InjectableRef {
   constructor(public ref: string) {}
 }
