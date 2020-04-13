@@ -4,16 +4,45 @@ DiCoI is a simple Dependency injection / Inversion of Control Container example 
 
 ## Installation
 
+Using npm:
+
 ```bash
-yarn add dicoi
+$ npm install dicoi
 ```
 
-## Usage
+```bash
+$ yarn add dicoi
+```
+
+## Example
+
+Lets suppose a `RatesService` that connects to an API to get currency rates and logs results. It depends on ApiService and Logger. `ApiService` also depends on `Logger` and also requires a param. To automatically initialize RatesService with those dependencies, we'd like to be able to do:
 
 ```typescript
-import { Container, @Injectable, @Inject, InjectionRef } from 'dicoi';
+import { Container } from 'dicoi';
+const container = new Container();
 
-const BASE_URL = new InjectionRef('BASE_URL');
+const rates = container
+  .inject({ ref: Logger, source: Logger, type: 'class' })
+  .and({
+    ref: BASE_URL,
+    source: 'https://api.exchangeratesapi.io',
+    type: 'param'
+  })
+  .and({ ref: ApiService, source: ApiService, type: 'class' })
+  .into(RatesService);
+
+rates.getRate('USD', ['GBP', 'EUR']).then(console.log);
+```
+
+DiCoI gives us a `Container` that will handle those dependenies for us. It has declarative methods that enable us to `inject(DEPENDENCY_PARAM_OBJET).and(DEPENDENCY_CLASS_OBJET).into(MAIN_CLASS)`
+
+For this to work, you'll need to decorate `RatesService` and `ApiService` with `@Injectable` decorator, and any dependency (non-class) param must be decorated with `@Inject` decorator.
+
+```typescript
+import { Container, Injectable, Inject, InjectableRef } from 'dicoi';
+
+const BASE_URL = new InjectableRef('BASE_URL');
 
 export class Logger {
   public log(...args: any[]) {
@@ -23,7 +52,10 @@ export class Logger {
 
 @Injectable()
 class ApiService {
-  constructor(@Inject(BASE_URL) private baseUrl, private logger: Logger) {
+  constructor(
+    @Inject(BASE_URL) private baseUrl: string,
+    private logger: Logger
+  ) {
     this.logger.log('ApiService initialized');
   }
 
@@ -34,20 +66,19 @@ class ApiService {
 }
 
 @Injectable()
-class ProductService {
-  constructor(private readonly api: ApiService) {}
-  async getProduct(id: string) {
-    return await this.api.getData(`/products/${id}`);
+class RatesService {
+  constructor(
+    private readonly api: ApiService,
+    private readonly logger: Logger
+  ) {
+    this.logger.log('Launching rates service');
+  }
+  async getRate(base: string, symbols: string[]) {
+    return await this.api.getData(
+      `latest?base=${base}&symbols=${symbols.join(',')}`
+    );
   }
 }
-
-const container = new Container();
-
-const products = container.inject({ ref: Logger, source: Logger, type: 'class' })
-         .and({ ref: BASE_URL, source: 'http://myservice.com/api', type: 'param' })
-         .and({ ref: ApiService, source: ApiService, type: 'class' })
-         .into(ProductService);
-
-product.getProduct('61501');
-
 ```
+
+> **NOTE:** that `Logger` class does not need any decorator, because we do not need to inject anything into it.
