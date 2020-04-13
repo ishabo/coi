@@ -1,6 +1,6 @@
 {
   "name": "dicoi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DiCoI - a Dependency Injection / Inversion of Control Container example in typescript",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
