@@ -1,4 +1,4 @@
-const prefix = 'coitainer';
+const prefix = 'dicoi';
 
 export default {
   INJECTABLE: Symbol(`${prefix}:injectable`),

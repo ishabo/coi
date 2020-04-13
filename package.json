@@ -1,5 +1,5 @@
 {
-  "name": "coitainer",
+  "name": "dicoi",
   "version": "1.0.0",
   "description": "IoC Container",
   "main": "build/index.js",
