@@ -10,6 +10,8 @@ Using npm:
 $ npm install dicoi
 ```
 
+Using yarn:
+
 ```bash
 $ yarn add dicoi
 ```
@@ -20,8 +22,8 @@ Lets suppose a `RatesService` that connects to an API to get currency rates and 
 
 ```typescript
 import { Container } from 'dicoi';
-const container = new Container();
 
+const container = new Container();
 const rates = container
   .inject({ ref: Logger, source: Logger, type: 'class' })
   .and({
@@ -82,3 +84,5 @@ class RatesService {
 ```
 
 > **NOTE:** that `Logger` class does not need any decorator, because we do not need to inject anything into it.
+
+You can view this working example in [this demo](https://codesandbox.io/s/nifty-gauss-l4lor)
