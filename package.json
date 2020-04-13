@@ -1,14 +1,17 @@
 {
   "name": "dicoi",
   "version": "1.0.0",
-  "description": "IoC Container",
-  "main": "build/index.js",
+  "description": "DiCoI - a Dependency Injection / Inversion of Control Container example in typescript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "author": "Issa Shabo <issashabo@gmail.com>",
   "license": "MIT",
+  "repository": "https://github.com/ishabo/dicoi.git",
   "scripts": {
     "build": "$(yarn bin)/tsc",
     "lint": "$(yarn bin)/tslint --project .",
-    "test": "$(yarn bin)/jest"
+    "test": "$(yarn bin)/jest",
+    "prepublish": "yarn build"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
