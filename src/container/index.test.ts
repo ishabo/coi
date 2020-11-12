@@ -122,7 +122,7 @@ describe('Container', () => {
       container
         .inject({ ref: LogFileRef, source: 'log.txt', type: 'param' })
         .into(MyOtherLogger);
-    });
+    }).toThrowError('Dependency missing');
   });
 
   it('inject more than one param into an injectable class', () => {

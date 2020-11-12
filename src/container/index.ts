@@ -34,11 +34,14 @@ export class Container {
     if (this.registrar.size === 0) {
       throw new Error('You need to call inject first');
     }
-    this.register(dependency);
-    return this;
+    return this.inject(dependency);
   };
 
   public into = <T>(target: TRef<T>) => {
+    if (this.registrar.get(target)) {
+      throw new Error("Recursive dependency")
+    }
+
     return this.construct(target);
   };
 
@@ -59,10 +62,10 @@ export class Container {
       };
     }
 
-    return this.injectDependency(target, registeredDependency);
+    return this.injectDependency(registeredDependency);
   }
 
-  private injectDependency<T>(target: TRef<T>, dependency?: TDependency<T>): T {
+  private injectDependency<T>(dependency?: TDependency<T>): T {
     if (dependency === undefined) {
       throw new Error(`Dependency missing`);
     }
@@ -77,14 +80,11 @@ export class Container {
 
   private getParams<T>(target: TConstructor<T>) {
     const params = Reflect.getMetadata('design:paramtypes', target) || [];
-    return params.map((param: InjectableRef, index: number) => {
-      if (param === undefined) {
-        throw new Error('Recursive dependency');
-      }
+    return params.filter(Boolean).map((param: InjectableRef, index: number) => {
       const ref =
         Reflect.getMetadata(keys.INJECT, target, String(index)) || param;
       const dependency = this.registrar.get(ref);
-      return this.injectDependency(target, dependency as TDependency<T>);
+      return this.injectDependency(dependency as TDependency<T>);
     });
   }
 }
